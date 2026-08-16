@@ -4,7 +4,9 @@ import { useGameStore } from "../store/gameStore";
 export default function useKeyboardInput() {
   const selectedCell = useGameStore((s) => s.selectedCell);
   const board = useGameStore((s) => s.board);
-  const setCellValue = useGameStore((s) => s.setCellValue);
+  const makeMove = useGameStore(
+  (s) => s.makeMove
+);
   const initialBoard = useGameStore((s) => s.initialBoard);
 
   useEffect(() => {
@@ -18,7 +20,7 @@ export default function useKeyboardInput() {
 
       // Numbers
       if (/^[1-9]$/.test(e.key)) {
-        setCellValue(row, col, Number(e.key));
+        makeMove(row, col, Number(e.key));
       }
 
       // Delete
@@ -27,7 +29,7 @@ export default function useKeyboardInput() {
         e.key === "Delete" ||
         e.key === "0"
       ) {
-        setCellValue(row, col, null);
+        makeMove(row, col, null);
       }
     }
 
@@ -35,5 +37,5 @@ export default function useKeyboardInput() {
 
     return () =>
       window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedCell, board, setCellValue, initialBoard]);
+  }, [selectedCell, board, makeMove, initialBoard]);
 }

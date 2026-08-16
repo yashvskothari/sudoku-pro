@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { isValidMove } from "../game/validator/validateMove";
 
 export type Difficulty = "Easy" | "Medium" | "Hard";
 
@@ -35,7 +36,7 @@ interface GameStore {
   incrementMoves: () => void;
   incrementMistakes: () => void;
   resetGame: () => void;
-  setCellValue: (
+  makeMove: (
   row: number,
   col: number,
   value: CellValue
@@ -67,9 +68,26 @@ export const useGameStore = create<GameStore>((set) => ({
       board,
       initialBoard: board.map((row) => [...row]),
     }),
-    setCellValue: (row, col, value) =>
+    makeMove: (row, col, value) =>
   set((state) => {
     const board = state.board.map((r) => [...r]);
+
+    // Clearing a cell is always allowed
+    if (value === null) {
+      board[row][col] = null;
+
+      return {
+        board,
+        moves: state.moves + 1,
+      };
+    }
+
+    // Validate move
+    if (!isValidMove(board, row, col, value)) {
+      return {
+        mistakes: state.mistakes + 1,
+      };
+    }
 
     board[row][col] = value;
 
