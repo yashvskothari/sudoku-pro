@@ -1,47 +1,93 @@
 import Card from "../common/Card";
+import { useGameStore } from "../../store/gameStore";
 
-const data = Array.from({ length: 9 }, (_, i) => ({
-  number: i + 1,
-  remaining: 9,
-}));
+function getRemaining(
+  board: (number | null)[][],
+  number: number
+) {
+  let count = 0;
+
+  board.forEach((row) =>
+    row.forEach((cell) => {
+      if (cell === number) count++;
+    })
+  );
+
+  return 9 - count;
+}
 
 function RemainingNumbers() {
+  const board = useGameStore((state) => state.board);
+
+  const initialBoard = useGameStore(
+    (state) => state.initialBoard
+  );
+
+  const selectedCell = useGameStore(
+    (state) => state.selectedCell
+  );
+
+  const setCellValue = useGameStore(
+    (state) => state.setCellValue
+  );
+
   return (
     <Card title="Remaining Numbers">
       <div className="grid grid-cols-3 gap-3">
-        {data.map(({ number, remaining }) => (
-          <button
-            key={number}
-            className="
-              aspect-auto
+        {Array.from({ length: 9 }, (_, i) => {
+          const number = i + 1;
 
-              rounded-2xl
+          const remaining = getRemaining(board, number);
 
-              border
-              border-white/20
+          return (
+            <button
+              key={number}
+              disabled={remaining === 0}
+              onClick={() => {
+                if (!selectedCell) return;
 
-              bg-white/10
+                const { row, col } = selectedCell;
 
-              transition-all
+                // Don't edit original clues
+                if (initialBoard[row][col] !== null) return;
 
-              duration-300
+                setCellValue(row, col, number);
+              }}
+              className={`
+                aspect-square
 
-              hover:scale-105
+                rounded-2xl
 
-              hover:border-indigo-400/40
+                border
 
-              hover:bg-indigo-500/10
-            "
-          >
-            <div className="mt-2 text-3xl font-bold text-indigo-300">
-              {number}
-            </div>
+                transition-all
+                duration-300
 
-            <div className="mt-1 text-xs text-zinc-400">
-              {remaining} left
-            </div>
-          </button>
-        ))}
+                ${
+                  remaining === 0
+                    ? "cursor-not-allowed border-emerald-500/40 bg-emerald-500/10 opacity-40"
+                    : "border-white/20 bg-white/10 hover:scale-105 hover:border-indigo-400/40 hover:bg-indigo-500/10"
+                }
+
+                ${
+                  selectedCell
+                    ? ""
+                    : "opacity-60"
+                }
+              `}
+            >
+              <div className="mt-2 text-3xl font-bold text-indigo-300">
+                {number}
+              </div>
+
+              <div className="mt-1 text-xs text-zinc-400">
+                {remaining === 0
+                  ? "Done ✓"
+                  : `${remaining} left`}
+              </div>
+            </button>
+          );
+        })}
       </div>
     </Card>
   );

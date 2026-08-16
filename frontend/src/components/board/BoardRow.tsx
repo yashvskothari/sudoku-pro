@@ -1,17 +1,23 @@
 import Cell from "./Cell";
+import { useGameStore } from "../../store/gameStore";
 
 interface BoardRowProps {
   row: number;
 }
 
 function BoardRow({ row }: BoardRowProps) {
+  const board = useGameStore((state) => state.board);
+  const initialBoard = useGameStore((s) => s.initialBoard);
+
   return (
     <>
-      {Array.from({ length: 9 }).map((_, col) => (
+      {board[row].map((value, col) => (
         <Cell
           key={`${row}-${col}`}
           row={row}
           col={col}
+          value={value}
+          fixed={initialBoard[row][col] !== null}
         />
       ))}
     </>
