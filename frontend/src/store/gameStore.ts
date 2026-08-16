@@ -23,6 +23,7 @@ interface GameStore {
   // Game Stats
   moves: number;
   mistakes: number;
+  invalidCell: Position | null;
 
   // Timer
   elapsedTime: number;
@@ -33,14 +34,15 @@ interface GameStore {
   // Actions
   setBoard: (board: Board) => void;
   setSelectedCell: (cell: Position | null) => void;
-  incrementMoves: () => void;
-  incrementMistakes: () => void;
-  resetGame: () => void;
+  setInvalidCell: (cell: Position | null) => void;
+
   makeMove: (
-  row: number,
-  col: number,
-  value: CellValue
-) => void;
+    row: number,
+    col: number,
+    value: CellValue
+  ) => void;
+
+  resetGame: () => void;
 }
 
 const createEmptyBoard = (): Board =>
@@ -59,6 +61,8 @@ export const useGameStore = create<GameStore>((set) => ({
 
   mistakes: 0,
 
+  invalidCell: null,
+
   elapsedTime: 0,
 
   difficulty: "Easy",
@@ -68,49 +72,50 @@ export const useGameStore = create<GameStore>((set) => ({
       board,
       initialBoard: board.map((row) => [...row]),
     }),
-    makeMove: (row, col, value) =>
-  set((state) => {
-    const board = state.board.map((r) => [...r]);
-
-    // Clearing a cell is always allowed
-    if (value === null) {
-      board[row][col] = null;
-
-      return {
-        board,
-        moves: state.moves + 1,
-      };
-    }
-
-    // Validate move
-    if (!isValidMove(board, row, col, value)) {
-      return {
-        mistakes: state.mistakes + 1,
-      };
-    }
-
-    board[row][col] = value;
-
-    return {
-      board,
-      moves: state.moves + 1,
-    };
-  }),
 
   setSelectedCell: (cell) =>
     set({
       selectedCell: cell,
     }),
 
-  incrementMoves: () =>
-    set((state) => ({
-      moves: state.moves + 1,
-    })),
+  setInvalidCell: (cell) =>
+    set({
+      invalidCell: cell,
+    }),
 
-  incrementMistakes: () =>
-    set((state) => ({
-      mistakes: state.mistakes + 1,
-    })),
+  makeMove: (row, col, value) =>
+    set((state) => {
+      const board = state.board.map((r) => [...r]);
+
+      // Clearing a cell is always allowed
+      if (value === null) {
+        board[row][col] = null;
+
+        return {
+          board,
+          moves: state.moves + 1,
+        };
+      }
+
+      // Validate move
+      if (!isValidMove(board, row, col, value)) {
+        setTimeout(() => {
+          useGameStore.getState().setInvalidCell(null);
+        }, 500);
+
+        return {
+          mistakes: state.mistakes + 1,
+          invalidCell: { row, col },
+        };
+      }
+
+      board[row][col] = value;
+
+      return {
+        board,
+        moves: state.moves + 1,
+      };
+    }),
 
   resetGame: () =>
     set({
@@ -119,6 +124,7 @@ export const useGameStore = create<GameStore>((set) => ({
       selectedCell: null,
       moves: 0,
       mistakes: 0,
+      invalidCell: null,
       elapsedTime: 0,
       difficulty: "Easy",
     }),

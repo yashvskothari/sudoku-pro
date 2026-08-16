@@ -37,6 +37,8 @@ function Cell({ row, col, value, fixed = false }: CellProps) {
   const sameNumber =
     selectedValue !== null && value === selectedValue && !isSelected;
 
+  
+
   return (
     <div
       onClick={() => {
