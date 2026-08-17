@@ -2,6 +2,7 @@ import GameContainer from "../components/layout/GameContainer";
 import Header from "../components/layout/Header";
 import { useEffect } from "react";
 import { useGameStore } from "../store/gameStore";
+import GameRules from "../components/rules/GameRules";
 import { samplePuzzle } from "../data/samplePuzzle";
 import useKeyboardInput from "../hooks/useKeyboardInput";
 // import GameShell from "../components/layout/GameShell";
@@ -26,6 +27,9 @@ function GamePage() {
         <Header />
 
         <GameContainer />
+      <div className="mt-5 mb-5 w-full max-w-250 mx-auto">
+        <GameRules />
+      </div>
       </div>
     </div>
   );

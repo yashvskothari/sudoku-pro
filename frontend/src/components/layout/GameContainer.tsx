@@ -11,7 +11,7 @@ function GameContainer() {
         flex
         w-full
         max-w-245
-
+        
         flex-col
         gap-8
         xl:gap-10
@@ -32,7 +32,7 @@ function GameContainer() {
     >
       {/* Board */}
 
-<div className="flex justify-center xl:justify-start">
+<div className="flex justify-center xl:justify-start h-full">
     <SudokuBoard />
 </div>
 

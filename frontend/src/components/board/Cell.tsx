@@ -16,6 +16,12 @@ function Cell({ row, col, value, fixed = false }: CellProps) {
   // Zustand store
   const { selectedCell, setSelectedCell } = useGameStore();
 
+  const invalidCell = useGameStore((state) => state.invalidCell);
+
+  const isInvalid =
+    invalidCell?.row === row &&
+    invalidCell?.col === col;
+
   // Is this the currently selected cell?
   const isSelected = selectedCell?.row === row && selectedCell?.col === col;
   const board = useGameStore((state) => state.board);
@@ -36,8 +42,6 @@ function Cell({ row, col, value, fixed = false }: CellProps) {
 
   const sameNumber =
     selectedValue !== null && value === selectedValue && !isSelected;
-
-  
 
   return (
     <div
@@ -67,15 +71,17 @@ function Cell({ row, col, value, fixed = false }: CellProps) {
         md:text-xl
 
 ${
-  isSelected
-    ? "bg-cyan-500/40 ring-2 ring-cyan-300 ring-inset"
-    : sameNumber
-      ? "bg-fuchsia-500/20"
-      : rowHighlight || columnHighlight || boxHighlight
-        ? "bg-indigo-500/10"
-        : fixed
-          ? "bg-zinc-800 cursor-default"
-          : "bg-zinc-900 hover:bg-indigo-400/10"
+  isInvalid
+    ? "bg-red-500/40 ring-2 ring-red-400 animate-pulse"
+    : isSelected
+      ? "bg-cyan-500/40 ring-2 ring-cyan-300 ring-inset"
+      : sameNumber
+        ? "bg-fuchsia-500/20"
+        : rowHighlight || columnHighlight || boxHighlight
+          ? "bg-indigo-500/10"
+          : fixed
+            ? "bg-zinc-800 cursor-default"
+            : "bg-zinc-900 hover:bg-indigo-400/10"
 }
 
         ${thickRight ? "border-r-2 sm:border-r-4 border-r-zinc-400" : ""}

@@ -1,41 +1,34 @@
 import { useEffect } from "react";
 import { useGameStore } from "../store/gameStore";
 
-export default function useKeyboardInput() {
-  const selectedCell = useGameStore((s) => s.selectedCell);
-  const board = useGameStore((s) => s.board);
-  const makeMove = useGameStore(
-  (s) => s.makeMove
-);
-  const initialBoard = useGameStore((s) => s.initialBoard);
+export const useKeyboardInput = () => {
+  const selectedCell = useGameStore((state) => state.selectedCell);
+  const initialBoard = useGameStore((state) => state.initialBoard);
+  const makeMove = useGameStore((state) => state.makeMove);
 
   useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (!selectedCell) return;
 
       const { row, col } = selectedCell;
 
-      // Don't edit original puzzle cells
-      if (initialBoard[row][col] !== null) return;
+      // Do not allow editing initial puzzle clues
+      if (initialBoard[row]?.[col] !== null) return;
 
-      // Numbers
-      if (/^[1-9]$/.test(e.key)) {
+      // Handle number keys (1-9)
+      if (e.key >= "1" && e.key <= "9") {
         makeMove(row, col, Number(e.key));
       }
 
-      // Delete
-      if (
-        e.key === "Backspace" ||
-        e.key === "Delete" ||
-        e.key === "0"
-      ) {
+      // Handle clearing the cell
+      if (e.key === "Backspace" || e.key === "Delete") {
         makeMove(row, col, null);
       }
-    }
+    };
 
     window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedCell, initialBoard, makeMove]);
+};
 
-    return () =>
-      window.removeEventListener("keydown", handleKeyDown);
-  }, [selectedCell, board, makeMove, initialBoard]);
-}
+export default useKeyboardInput;

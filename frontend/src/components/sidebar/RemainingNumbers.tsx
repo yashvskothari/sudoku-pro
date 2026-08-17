@@ -1,4 +1,5 @@
 import Card from "../common/Card";
+
 import { useGameStore } from "../../store/gameStore";
 
 function getRemaining(board: (number | null)[][], number: number) {
@@ -21,6 +22,9 @@ function RemainingNumbers() {
   const selectedCell = useGameStore((state) => state.selectedCell);
 
   const makeMove = useGameStore((state) => state.makeMove);
+  const selectedValue = selectedCell
+  ? board[selectedCell.row][selectedCell.col]
+  : null;
 
   return (
     <Card title="Remaining Numbers">
@@ -45,33 +49,68 @@ function RemainingNumbers() {
                 makeMove(row, col, number);
               }}
               className={`
-                aspect-square
-
+                aspect-auto
+                group
                 rounded-2xl
 
                 border
 
                 transition-all
                 duration-300
+                group-hover:scale-110
 
                 ${
                   remaining === 0
-                    ? "cursor-not-allowed border-emerald-500/40 bg-emerald-500/10 opacity-40"
-                    : "border-white/20 bg-white/10 hover:scale-105 hover:border-indigo-400/40 hover:bg-indigo-500/10"
+                    ? "cursor-not-allowed border-emerald-500/40 bg-emerald-500/10 opacity-50 grayscale"
+                    : "border-white/20 bg-white/10 hover:-translate-y-1 hover:scale-105 hover:border-indigo-400/40 hover:bg-indigo-500/10"
                 }
+                ${
+  selectedValue === number
+    ? "ring-2 ring-cyan-400 shadow-[0_0_30px_rgba(34,211,238,.35)]"
+    : ""
+}
 
-                ${selectedCell ? "" : "opacity-60"}
+                
               `}
             >
-              <div className="mt-2 text-3xl font-bold text-indigo-300">
-                {number}
-              </div>
+<div
+  className={`
+    mx-auto
+    mt-5
+    border
+    rounded-full
+    flex
+    h-14
+    w-14
+    items-center
+    justify-center
+    text-2xl
+    font-bold
+    transition-all
+    duration-300
+    group-hover:scale-110
 
-              <div className="mt-1 text-xs text-zinc-400">
-                {remaining === 0 ? "Done ✓" : `${remaining} left`}
+    ${
+      remaining === 0
+        ? "border-emerald-400 bg-emerald-500/20 text-emerald-300"
+        : "border-indigo-400/30 bg-indigo-500/10 text-indigo-300"
+    }
+  `}
+>
+  {number}
+  </div>
+
+
+              <div className="mt-2 text-[11px] tracking-wide uppercase font-medium">
+                {remaining === 0 ? (
+                  <span className="text-emerald-400">✓ DONE</span>
+                ) : (
+                  <span className="text-zinc-400">{remaining} left</span>
+                )}
               </div>
             </button>
           );
+        
         })}
       </div>
     </Card>
