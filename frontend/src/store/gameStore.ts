@@ -47,6 +47,7 @@ interface GameStore {
   isComplete: boolean;
   isGameOver: boolean;
   isNotesMode: boolean;
+  hasStarted: boolean;
 
   // Settings
   difficulty: Difficulty;
@@ -77,6 +78,7 @@ interface GameStore {
   newGame: (difficulty?: Difficulty) => void;
   restartGame: () => void;
   resetGame: () => void;
+  selectDifficulty: (difficulty: Difficulty) => void;
 }
 
 const createEmptyBoard = (): Board =>
@@ -129,6 +131,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   isNotesMode: false,
 
+  hasStarted: false,
+
   difficulty: "Easy",
 
   history: [],
@@ -152,6 +156,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       isComplete: false,
       isGameOver: false,
       isNotesMode: false,
+      hasStarted: true,
       history: [],
       future: [],
     }),
@@ -168,7 +173,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   makeMove: (row, col, value) =>
     set((state) => {
-      if (state.isPaused || state.isComplete || state.isGameOver) {
+      if (!state.hasStarted || state.isPaused || state.isComplete || state.isGameOver) {
         return {};
       }
 
@@ -249,7 +254,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   toggleNote: (row, col, digit) =>
     set((state) => {
-      if (state.isPaused || state.isComplete || state.isGameOver) {
+      if (!state.hasStarted || state.isPaused || state.isComplete || state.isGameOver) {
         return {};
       }
 
@@ -294,7 +299,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   eraseCell: () =>
     set((state) => {
-      if (state.isPaused || state.isComplete || state.isGameOver) {
+      if (!state.hasStarted || state.isPaused || state.isComplete || state.isGameOver) {
         return {};
       }
 
@@ -337,7 +342,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   useHint: () =>
     set((state) => {
-      if (state.isPaused || state.isComplete || state.isGameOver) {
+      if (!state.hasStarted || state.isPaused || state.isComplete || state.isGameOver) {
         return {};
       }
 
@@ -474,7 +479,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   tick: () =>
     set((state) => {
-      if (state.isPaused || state.isComplete || state.isGameOver) {
+      if (!state.hasStarted || state.isPaused || state.isComplete || state.isGameOver) {
         return {};
       }
 
@@ -502,6 +507,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         isComplete: false,
         isGameOver: false,
         isNotesMode: false,
+        hasStarted: true,
         difficulty: targetDifficulty,
         history: [],
         future: [],
@@ -509,23 +515,27 @@ export const useGameStore = create<GameStore>((set, get) => ({
     }),
 
   restartGame: () =>
-    set((state) => ({
-      board: state.initialBoard.map((row) => [...row]),
-      notes: createEmptyNotes(),
-      selectedCell: null,
-      moves: 0,
-      mistakes: 0,
-      hintsUsed: 0,
-      invalidCell: null,
-      hintLimitReached: false,
-      elapsedTime: 0,
-      isPaused: false,
-      isComplete: false,
-      isGameOver: false,
-      isNotesMode: false,
-      history: [],
-      future: [],
-    })),
+    set((state) => {
+      if (!state.hasStarted) return {};
+
+      return {
+        board: state.initialBoard.map((row) => [...row]),
+        notes: createEmptyNotes(),
+        selectedCell: null,
+        moves: 0,
+        mistakes: 0,
+        hintsUsed: 0,
+        invalidCell: null,
+        hintLimitReached: false,
+        elapsedTime: 0,
+        isPaused: false,
+        isComplete: false,
+        isGameOver: false,
+        isNotesMode: false,
+        history: [],
+        future: [],
+      };
+    }),
 
   resetGame: () =>
     set({
@@ -544,7 +554,35 @@ export const useGameStore = create<GameStore>((set, get) => ({
       isComplete: false,
       isGameOver: false,
       isNotesMode: false,
+      hasStarted: false,
       difficulty: "Easy",
+      history: [],
+      future: [],
+    }),
+
+  // Changing the difficulty before/after a game is in progress clears
+  // the current puzzle and re-arms the Start button -- the new
+  // difficulty only takes effect once the player explicitly starts
+  // (or restarts) the game.
+  selectDifficulty: (difficulty) =>
+    set({
+      board: createEmptyBoard(),
+      initialBoard: createEmptyBoard(),
+      solution: createEmptyBoard(),
+      notes: createEmptyNotes(),
+      selectedCell: null,
+      moves: 0,
+      mistakes: 0,
+      hintsUsed: 0,
+      invalidCell: null,
+      hintLimitReached: false,
+      elapsedTime: 0,
+      isPaused: false,
+      isComplete: false,
+      isGameOver: false,
+      isNotesMode: false,
+      hasStarted: false,
+      difficulty,
       history: [],
       future: [],
     }),

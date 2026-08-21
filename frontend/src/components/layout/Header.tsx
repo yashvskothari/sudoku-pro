@@ -15,12 +15,14 @@ function Header() {
   const isPaused = useGameStore((state) => state.isPaused);
   const isComplete = useGameStore((state) => state.isComplete);
   const isGameOver = useGameStore((state) => state.isGameOver);
+  const hasStarted = useGameStore((state) => state.hasStarted);
   const togglePause = useGameStore((state) => state.togglePause);
   const difficulty = useGameStore((state) => state.difficulty);
   const newGame = useGameStore((state) => state.newGame);
   const restartGame = useGameStore((state) => state.restartGame);
+  const selectDifficulty = useGameStore((state) => state.selectDifficulty);
 
-  const canPause = !isComplete && !isGameOver;
+  const canPause = hasStarted && !isComplete && !isGameOver;
 
   return (
     <header className="w-full border-b border-zinc-800 bg-zinc-900/70 backdrop-blur-xl">
@@ -33,7 +35,7 @@ function Header() {
           {DIFFICULTIES.map((level) => (
             <button
               key={level}
-              onClick={() => newGame(level)}
+              onClick={() => selectDifficulty(level)}
               className={`rounded-lg px-3 py-1.5 text-xs font-semibold tracking-wide transition ${
                 difficulty === level
                   ? "bg-cyan-500/90 text-zinc-950"
@@ -46,6 +48,15 @@ function Header() {
         </div>
 
         <div className="flex items-center gap-4 text-zinc-300">
+          <button
+            onClick={() => newGame(difficulty)}
+            title={hasStarted ? "Start a new game" : "Start the game"}
+            className="flex items-center gap-2 rounded-lg bg-cyan-500/90 px-3 py-1.5 text-xs font-semibold text-zinc-950 transition hover:bg-cyan-400"
+          >
+            <Play size={16} />
+            {hasStarted ? "Start New Game" : "Start Game"}
+          </button>
+
           <div className="flex items-center gap-2">
             <Clock3 size={18} />
             <span className="tabular-nums">{formatTime(elapsedTime)}</span>
@@ -62,16 +73,18 @@ function Header() {
 
           <button
             onClick={restartGame}
+            disabled={!hasStarted}
             title="Restart puzzle"
-            className="rounded-lg p-2 transition hover:bg-zinc-800"
+            className="rounded-lg p-2 transition hover:bg-zinc-800 disabled:opacity-40"
           >
             <RotateCcw size={20} />
           </button>
 
           <button
             onClick={() => newGame()}
+            disabled={!hasStarted}
             title="New game"
-            className="rounded-lg p-2 transition hover:bg-zinc-800"
+            className="rounded-lg p-2 transition hover:bg-zinc-800 disabled:opacity-40"
           >
             <Sparkles size={20} />
           </button>

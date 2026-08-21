@@ -28,6 +28,7 @@ function RemainingNumbers() {
   const inputDigit = useGameStore((state) => state.inputDigit);
   const isInteractive = useGameStore(
     (state) =>
+      state.hasStarted &&
       !state.isPaused &&
       !state.isComplete &&
       !state.isGameOver &&

@@ -20,7 +20,11 @@ function Cell({ row, col, value, fixed = false }: CellProps) {
   const board = useGameStore((state) => state.board);
   const notes = useGameStore((state) => state.notes[row][col]);
   const isInteractive = useGameStore(
-    (state) => !state.isPaused && !state.isComplete && !state.isGameOver
+    (state) =>
+      state.hasStarted &&
+      !state.isPaused &&
+      !state.isComplete &&
+      !state.isGameOver
   );
 
   const isInvalid = invalidCell?.row === row && invalidCell?.col === col;

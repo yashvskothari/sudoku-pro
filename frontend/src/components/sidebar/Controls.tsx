@@ -14,6 +14,7 @@ function Controls() {
   const selectedCell = useGameStore((state) => state.selectedCell);
   const isInteractive = useGameStore(
     (state) =>
+      state.hasStarted &&
       !state.isPaused &&
       !state.isComplete &&
       !state.isGameOver &&

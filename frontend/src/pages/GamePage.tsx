@@ -6,25 +6,13 @@ import GameRules from "../components/rules/GameRules";
 import useKeyboardInput from "../hooks/useKeyboardInput";
 
 function GamePage() {
-  const newGame = useGameStore((state) => state.newGame);
   const tick = useGameStore((state) => state.tick);
-  const initialBoard = useGameStore((state) => state.initialBoard);
 
   useKeyboardInput();
 
-  // Start a fresh puzzle the first time the app loads
-  useEffect(() => {
-    const hasPuzzle = initialBoard.some((row) =>
-      row.some((cell) => cell !== null)
-    );
-
-    if (!hasPuzzle) {
-      newGame();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Global game timer
+  // Global game timer. tick() itself is a no-op until the player has
+  // pressed Start (see gameStore.hasStarted), so this is safe to run
+  // unconditionally.
   useEffect(() => {
     const interval = setInterval(() => {
       tick();
