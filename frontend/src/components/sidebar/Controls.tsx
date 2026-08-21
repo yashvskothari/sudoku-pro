@@ -13,7 +13,11 @@ function Controls() {
   const future = useGameStore((state) => state.future);
   const selectedCell = useGameStore((state) => state.selectedCell);
   const isInteractive = useGameStore(
-    (state) => !state.isPaused && !state.isComplete && !state.isGameOver
+    (state) =>
+      !state.isPaused &&
+      !state.isComplete &&
+      !state.isGameOver &&
+      !state.hintLimitReached
   );
 
   const buttons = [

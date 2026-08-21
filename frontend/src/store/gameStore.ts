@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { isValidMove } from "../game/validator/validateMove";
 import { generatePuzzle } from "../engine/generator/generator";
-import { MAX_MISTAKES } from "../engine/difficulty/difficulty";
+import { MAX_MISTAKES, MAX_HINTS } from "../engine/difficulty/difficulty";
 import type { Difficulty } from "../engine/difficulty/difficulty";
 
 export type { Difficulty };
@@ -37,6 +37,7 @@ interface GameStore {
   mistakes: number;
   hintsUsed: number;
   invalidCell: Position | null;
+  hintLimitReached: boolean;
 
   // Timer
   elapsedTime: number;
@@ -65,6 +66,7 @@ interface GameStore {
   eraseCell: () => void;
   toggleNotesMode: () => void;
   useHint: () => void;
+  dismissHintPrompt: () => void;
 
   undo: () => void;
   redo: () => void;
@@ -115,6 +117,8 @@ export const useGameStore = create<GameStore>((set, get) => ({
 
   invalidCell: null,
 
+  hintLimitReached: false,
+
   elapsedTime: 0,
 
   isPaused: false,
@@ -142,6 +146,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       mistakes: 0,
       hintsUsed: 0,
       invalidCell: null,
+      hintLimitReached: false,
       elapsedTime: 0,
       isPaused: false,
       isComplete: false,
@@ -339,6 +344,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
       const cell = state.selectedCell;
       if (!cell) return {};
 
+      // Cap the number of hints allowed per game. Once the limit is
+      // reached, clicking Hint again doesn't reveal another cell --
+      // it prompts the player to either start a fresh game or keep
+      // playing without further hints.
+      if (state.hintsUsed >= MAX_HINTS) {
+        return { hintLimitReached: true };
+      }
+
       const { row, col } = cell;
 
       if (state.initialBoard[row][col] !== null) return {};
@@ -396,6 +409,11 @@ export const useGameStore = create<GameStore>((set, get) => ({
         future: [],
         isComplete,
       };
+    }),
+
+  dismissHintPrompt: () =>
+    set({
+      hintLimitReached: false,
     }),
 
   undo: () =>
@@ -478,6 +496,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
         mistakes: 0,
         hintsUsed: 0,
         invalidCell: null,
+        hintLimitReached: false,
         elapsedTime: 0,
         isPaused: false,
         isComplete: false,
@@ -498,6 +517,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       mistakes: 0,
       hintsUsed: 0,
       invalidCell: null,
+      hintLimitReached: false,
       elapsedTime: 0,
       isPaused: false,
       isComplete: false,
@@ -518,6 +538,7 @@ export const useGameStore = create<GameStore>((set, get) => ({
       mistakes: 0,
       hintsUsed: 0,
       invalidCell: null,
+      hintLimitReached: false,
       elapsedTime: 0,
       isPaused: false,
       isComplete: false,

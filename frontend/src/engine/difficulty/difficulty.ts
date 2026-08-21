@@ -20,3 +20,10 @@ export const CLUE_TARGETS: Record<Difficulty, number> = {
  * Maximum mistakes allowed before the game is over.
  */
 export const MAX_MISTAKES = 3;
+
+/**
+ * Maximum hints allowed per game. Once used up, the player is
+ * prompted to either start a new game or keep playing without
+ * any more hints.
+ */
+export const MAX_HINTS = 2;

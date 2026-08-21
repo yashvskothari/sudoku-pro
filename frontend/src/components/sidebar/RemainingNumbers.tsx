@@ -27,7 +27,11 @@ function RemainingNumbers() {
 
   const inputDigit = useGameStore((state) => state.inputDigit);
   const isInteractive = useGameStore(
-    (state) => !state.isPaused && !state.isComplete && !state.isGameOver
+    (state) =>
+      !state.isPaused &&
+      !state.isComplete &&
+      !state.isGameOver &&
+      !state.hintLimitReached
   );
   const selectedValue = selectedCell
   ? board[selectedCell.row][selectedCell.col]
