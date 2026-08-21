@@ -28,7 +28,7 @@ function Header() {
     <header className="w-full border-b border-zinc-800 bg-zinc-900/70 backdrop-blur-xl">
       <div className="mx-auto flex h-auto max-w-7xl flex-wrap items-center justify-between gap-3 px-6 py-3">
         <div>
-          <h1 className="text-2xl font-bold leading-none">🧩 Sudoku Pro</h1>
+          <h1 className="text-2xl font-bold leading-none">🧩 Sudoku Yokozuna</h1>
         </div>
 
         <div className="flex items-center gap-1 rounded-xl bg-white/5 p-1">
