@@ -1,28 +1,54 @@
 import Card from "../common/Card";
+import ProgressRing from "../common/ProgressRing";
+import { useGameStore } from "../../store/gameStore";
+import { MAX_MISTAKES } from "../../engine/difficulty/difficulty";
 
 function Statistics() {
+  const moves = useGameStore((state) => state.moves);
+  const mistakes = useGameStore((state) => state.mistakes);
+  const hintsUsed = useGameStore((state) => state.hintsUsed);
+  const difficulty = useGameStore((state) => state.difficulty);
+  const board = useGameStore((state) => state.board);
+
+  const filledCells = board.reduce(
+    (total, row) => total + row.filter((cell) => cell !== null).length,
+    0
+  );
+  const progress = Math.round((filledCells / 81) * 100);
+
   return (
     <Card title="Statistics">
-
-      <div className="space-y-3">
+      <div className="space-y-4">
+        <div>
+          <div className="mb-2 flex justify-between text-sm text-zinc-300">
+            <span>Progress</span>
+            <span>{progress}%</span>
+          </div>
+          <ProgressRing value={progress} />
+        </div>
 
         <div className="flex justify-between">
           <span>Moves</span>
-          <span>0</span>
+          <span>{moves}</span>
         </div>
 
         <div className="flex justify-between">
           <span>Mistakes</span>
-          <span>0 / 3</span>
+          <span className={mistakes > 0 ? "text-red-400" : ""}>
+            {mistakes} / {MAX_MISTAKES}
+          </span>
         </div>
 
         <div className="flex justify-between">
-          <span>Progress</span>
-          <span>0%</span>
+          <span>Hints Used</span>
+          <span>{hintsUsed}</span>
         </div>
 
+        <div className="flex justify-between">
+          <span>Difficulty</span>
+          <span>{difficulty}</span>
+        </div>
       </div>
-
     </Card>
   );
 }

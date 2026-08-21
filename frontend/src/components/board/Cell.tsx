@@ -14,17 +14,19 @@ function Cell({ row, col, value, fixed = false }: CellProps) {
   const thickBottom = row === 2 || row === 5;
 
   // Zustand store
-  const { selectedCell, setSelectedCell } = useGameStore();
-
+  const selectedCell = useGameStore((state) => state.selectedCell);
+  const setSelectedCell = useGameStore((state) => state.setSelectedCell);
   const invalidCell = useGameStore((state) => state.invalidCell);
+  const board = useGameStore((state) => state.board);
+  const notes = useGameStore((state) => state.notes[row][col]);
+  const isInteractive = useGameStore(
+    (state) => !state.isPaused && !state.isComplete && !state.isGameOver
+  );
 
-  const isInvalid =
-    invalidCell?.row === row &&
-    invalidCell?.col === col;
+  const isInvalid = invalidCell?.row === row && invalidCell?.col === col;
 
   // Is this the currently selected cell?
   const isSelected = selectedCell?.row === row && selectedCell?.col === col;
-  const board = useGameStore((state) => state.board);
 
   const selectedValue = selectedCell
     ? board[selectedCell.row][selectedCell.col]
@@ -46,11 +48,12 @@ function Cell({ row, col, value, fixed = false }: CellProps) {
   return (
     <div
       onClick={() => {
-        if (!fixed) {
+        if (isInteractive) {
           setSelectedCell({ row, col });
         }
       }}
       className={`
+        relative
         flex
         aspect-square
         h-full
@@ -89,7 +92,22 @@ ${
         ${thickBottom ? "border-b-2 sm:border-b-4 border-b-zinc-400" : ""}
       `}
     >
-      {value}
+      {value !== null ? (
+        <span className={fixed ? "text-zinc-100" : "text-cyan-300"}>
+          {value}
+        </span>
+      ) : notes.length > 0 ? (
+        <div className="grid h-full w-full grid-cols-3 grid-rows-3 p-0.5">
+          {Array.from({ length: 9 }, (_, i) => i + 1).map((digit) => (
+            <div
+              key={digit}
+              className="flex items-center justify-center text-[9px] font-medium leading-none text-indigo-300/80 sm:text-[10px]"
+            >
+              {notes.includes(digit) ? digit : ""}
+            </div>
+          ))}
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -1,9 +1,11 @@
 import BoardRow from "./BoardRow";
+import StatusOverlay from "./StatusOverlay";
 
 function SudokuBoard() {
   return (
-<div
-  className="
+    <div
+      className="
+    relative
     w-[min(50vw,600px)]
     aspect-square
 
@@ -22,12 +24,14 @@ function SudokuBoard() {
 
     shrink-0
   "
->
+    >
       <div className="grid h-full w-auto grid-cols-9">
         {Array.from({ length: 9 }).map((_, row) => (
           <BoardRow key={row} row={row} />
         ))}
       </div>
+
+      <StatusOverlay />
     </div>
   );
 }

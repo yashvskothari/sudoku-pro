@@ -3,17 +3,36 @@ import Header from "../components/layout/Header";
 import { useEffect } from "react";
 import { useGameStore } from "../store/gameStore";
 import GameRules from "../components/rules/GameRules";
-import { samplePuzzle } from "../data/samplePuzzle";
 import useKeyboardInput from "../hooks/useKeyboardInput";
-// import GameShell from "../components/layout/GameShell";
 
 function GamePage() {
-  const setBoard = useGameStore((state) => state.setBoard);
+  const newGame = useGameStore((state) => state.newGame);
+  const tick = useGameStore((state) => state.tick);
+  const initialBoard = useGameStore((state) => state.initialBoard);
 
   useKeyboardInput();
+
+  // Start a fresh puzzle the first time the app loads
   useEffect(() => {
-    setBoard(samplePuzzle);
-  }, [setBoard]);
+    const hasPuzzle = initialBoard.some((row) =>
+      row.some((cell) => cell !== null)
+    );
+
+    if (!hasPuzzle) {
+      newGame();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Global game timer
+  useEffect(() => {
+    const interval = setInterval(() => {
+      tick();
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [tick]);
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-zinc-950 text-white">
       {/* Background */}
@@ -27,9 +46,9 @@ function GamePage() {
         <Header />
 
         <GameContainer />
-      <div className="mt-5 mb-5 w-full max-w-250 mx-auto">
-        <GameRules />
-      </div>
+        <div className="mt-5 mb-5 w-full max-w-250 mx-auto">
+          <GameRules />
+        </div>
       </div>
     </div>
   );

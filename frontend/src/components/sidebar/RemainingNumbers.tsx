@@ -21,7 +21,10 @@ function RemainingNumbers() {
 
   const selectedCell = useGameStore((state) => state.selectedCell);
 
-  const makeMove = useGameStore((state) => state.makeMove);
+  const inputDigit = useGameStore((state) => state.inputDigit);
+  const isInteractive = useGameStore(
+    (state) => !state.isPaused && !state.isComplete && !state.isGameOver
+  );
   const selectedValue = selectedCell
   ? board[selectedCell.row][selectedCell.col]
   : null;
@@ -37,7 +40,7 @@ function RemainingNumbers() {
           return (
             <button
               key={number}
-              disabled={remaining === 0}
+              disabled={remaining === 0 || !isInteractive}
               onClick={() => {
                 if (!selectedCell) return;
 
@@ -46,7 +49,7 @@ function RemainingNumbers() {
                 // Don't edit original clues
                 if (initialBoard[row][col] !== null) return;
 
-                makeMove(row, col, number);
+                inputDigit(row, col, number);
               }}
               className={`
                 aspect-auto

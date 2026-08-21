@@ -12,9 +12,6 @@ function GameRules() {
           </p>
         </div>
         
-        <br>
-        </br>
-
         <div className="flex items-start gap-3">
           <BookOpen className="mt-1 h-4 w-4 shrink-0 text-cyan-400" />
           <p>
