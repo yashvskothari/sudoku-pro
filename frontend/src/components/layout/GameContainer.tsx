@@ -32,7 +32,7 @@ function GameContainer() {
     >
       {/* Board */}
 
-<div className="flex justify-center xl:justify-start h-full">
+<div className="flex w-full justify-center xl:w-auto xl:justify-start h-full">
     <SudokuBoard />
 </div>
 

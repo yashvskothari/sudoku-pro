@@ -6,8 +6,9 @@ function SudokuBoard() {
     <div
       className="
     relative
-    w-[min(50vw,600px)]
+    w-full
     aspect-square
+    xl:w-[min(50vw,600px)]
 
     rounded-[28px]
 
