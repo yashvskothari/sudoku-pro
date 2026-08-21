@@ -11,7 +11,11 @@ function getRemaining(board: (number | null)[][], number: number) {
     }),
   );
 
-  return 9 - count;
+  // A number can never legitimately appear more than 9 times on the
+  // board. If it somehow does (a corrupted/invalid board state), don't
+  // let the remaining count go negative — clamp at 0 instead of showing
+  // impossible values like "-1".
+  return Math.max(0, 9 - count);
 }
 
 function RemainingNumbers() {

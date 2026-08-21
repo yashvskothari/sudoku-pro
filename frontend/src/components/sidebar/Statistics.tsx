@@ -9,12 +9,24 @@ function Statistics() {
   const hintsUsed = useGameStore((state) => state.hintsUsed);
   const difficulty = useGameStore((state) => state.difficulty);
   const board = useGameStore((state) => state.board);
+  const solution = useGameStore((state) => state.solution);
 
-  const filledCells = board.reduce(
-    (total, row) => total + row.filter((cell) => cell !== null).length,
+  // Progress should reflect how much of the board is *correctly* filled,
+  // not just how many cells have something typed in them. Counting raw
+  // fill count let the bar hit 100% even when the grid contained
+  // duplicate/incorrect digits (e.g. an extra 5 in place of a missing 1),
+  // which misleadingly showed the puzzle as "done" when it wasn't.
+  const hasSolution = solution.some((row) => row.some((cell) => cell !== null));
+
+  const correctCells = board.reduce(
+    (total, row, r) =>
+      total +
+      row.filter(
+        (cell, c) => cell !== null && (!hasSolution || cell === solution[r][c])
+      ).length,
     0
   );
-  const progress = Math.round((filledCells / 81) * 100);
+  const progress = Math.round((correctCells / 81) * 100);
 
   return (
     <Card title="Statistics">

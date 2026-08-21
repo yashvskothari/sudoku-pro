@@ -356,6 +356,33 @@ export const useGameStore = create<GameStore>((set, get) => ({
       const board = cloneBoard(state.board);
       const notes = cloneNotes(state.notes);
 
+      // A cell the user filled in earlier can be "locally valid" (no
+      // conflict at the time it was placed) yet still wrong for the
+      // final solution. If that wrong value happens to equal the digit
+      // we're about to reveal here, placing the hint would create a
+      // real duplicate in this row/column/box (e.g. two 5s), which is
+      // what was corrupting the "Remaining Numbers" counts. Clear any
+      // such stale, incorrect occurrences of this value first.
+      const boxRow = Math.floor(row / 3) * 3;
+      const boxCol = Math.floor(col / 3) * 3;
+
+      const clearIfConflicting = (r: number, c: number) => {
+        if (r === row && c === col) return;
+        if (
+          board[r][c] === correctValue &&
+          state.initialBoard[r][c] === null
+        ) {
+          board[r][c] = null;
+          notes[r][c] = [];
+        }
+      };
+
+      for (let c = 0; c < 9; c++) clearIfConflicting(row, c);
+      for (let r = 0; r < 9; r++) clearIfConflicting(r, col);
+      for (let r = boxRow; r < boxRow + 3; r++) {
+        for (let c = boxCol; c < boxCol + 3; c++) clearIfConflicting(r, c);
+      }
+
       board[row][col] = correctValue;
       notes[row][col] = [];
 
